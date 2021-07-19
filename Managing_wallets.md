@@ -88,3 +88,29 @@ A pruned node, however, is incompatible with the `-rescan` option, since it does
 In that case, it is necessary restart the node with the `-reindex` command line option to start over with the initial sync. The wallet will scan for relevant transactions during the synchronization and rediscover the funds and transaction history of the wallet.
 
 >$ bitcoind -reindex
+
+### 1.7 Dumping Wallet
+
+Alternatively, the `dumpwallet` command can be used to backup the wallet. It dumps all wallet keys (including the master private key) in a human-readable format to a file.
+
+Note that this file is not encrypted and the keys are exposed. An attacker in possession of the file could recreate the wallet and gain access to the keys.
+
+The file is generated on server side, user must have access to server folders.
+
+>$ bitcoin-cli -rpcwallet="wallet-01" dumpwallet /home/node01/Backups/dump01.txt
+
+### 1.8 Importing Wallet From a Dump File
+
+The command `importwallet` imports keys from a wallet dump file.
+
+The first step is to create a new wallet.
+
+>$ bitcoin-cli createwallet "from_dump_file"
+
+Then this command can be called.
+
+>$ bitcoin-cli -rpcwallet="from_dump_file" importwallet /home/node01/Backups/dump01.txt
+
+After that, `getwalletinfo` can be used to check if the wallet has been fully restored.
+
+>$ bitcoin-cli -rpcwallet="from_dump_file" getwalletinfo
