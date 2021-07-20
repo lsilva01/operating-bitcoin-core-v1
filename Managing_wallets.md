@@ -1,17 +1,17 @@
-# Managing Wallets
+# Managing The Wallet
 
-## 1. Backing Up and Restoring Wallet
+## 1. Backing Up and Restoring The Wallet
 
-### 1.1 Creating Wallet
+### 1.1 Creating The Wallet
 
 Since version 0.21, Bitcoin Core no longer has a default wallet.
-Wallets can be created with the RPC command `createwallet` and more information about this command can be found running `bitcoin-cli help createwallet`.
+Wallets can be created with the RPC command `createwallet`. More information about this command can be found running `bitcoin-cli help createwallet`.
 
 The following command, for example, creates a descriptor wallet:
 
 `$ bitcoin-cli -named createwallet wallet_name="wallet01" descriptors=true`
 
-If the node is running on testnet network, `-testnet` parameter should be added. Or `-signet` if signet.
+If the node is running on testnet network, `-testnet` parameter should be added. Or `-signet` if on signet.
 
 `$ bitcoin-cli -testnet -named createwallet wallet_name="wallet01" descriptors=true`
 
@@ -19,9 +19,9 @@ The `descriptors` parameter can be omitted if the intention is to create a legac
 
 For now, the default type is the legacy wallet, but that should change in the near future.
 
-By default, wallets are created in the `~/.bitcoin/wallets/wallet_name` folder. If the node is running on testnet, the wallets are created in `~/.bitcoin/testnet3/wallets/wallet_name` or if signet, ``~/.bitcoin/signet/wallets/wallet_name`.
+By default, wallets are created in the `~/.bitcoin/wallets/wallet_name` folder. If the node is running on testnet, the wallets are created in `~/.bitcoin/testnet3/wallets/wallet_name` or if signet, `~/.bitcoin/signet/wallets/wallet_name`.
 
-### 1.2 Encrypting Wallet
+### 1.2 Encrypting The Wallet
 
 The `wallet.dat` file is not encrypted by default and is, therefore, vulnerable if an attacker gains access to the device where the wallet or the backups are stored.
 
@@ -29,7 +29,7 @@ The wallet must be encrypted with the following command:
 
 `$ bitcoin-cli -rpcwallet="wallet-01" encryptwallet "passphrase"`
 
-The `encryptwallet` command is used only when the wallet is not encrypted yet. Otherwise, the `walletpassphrasechange` command should be used.
+The `encryptwallet` command is used only when the wallet has not been encrypted yet. Otherwise, the `walletpassphrasechange` command should be used.
 
 `$ bitcoin-cli -rpcwallet="wallet-01" walletpassphrasechange "oldpassphrase" "newpassphrase"`
 
@@ -39,19 +39,21 @@ The term "encrypt the wallet" used here is not very accurate. This command only 
 
 Note that if the passphrase is lost, all the coins in the wallet will also be lost forever.
 
-### 1.3 Backing Up Wallet
+### 1.3 Backing Up The Wallet
 
-Wallets can be safely copied for another destination. This backup file should be stored offline, such as on a USB drive, another computer, or an external hard drive.
+Wallets can be safely copied to another destination. This backup file should be stored offline, such as on a USB drive, another computer, or an external hard drive.
 
 If the wallet and backup are lost for any reason, the bitcoins related to this wallet will become permanently inaccessible.
 
-The command is `bitcoin-cli backupwallet "destination"`. The destination parameter must include the name of the file. Otherwise, the command will return an error message like "Error: Wallet backup failed!" if the wallet is of descriptor type. If it is of legacy type, it will be copied with the default name `wallet.dat`.
+The command is `bitcoin-cli backupwallet "destination"`. The destination parameter must include the name of the file. Otherwise, the command will return an error message like "Error: Wallet backup failed!" for descriptor wallets. If it is a legacy wallet, it will be copied and a file will be created with the default file name `wallet.dat`.
 
 `$ bitcoin-cli -rpcwallet="wallet-01" backupwallet /home/node01/Backups/backup01.dat`
 
 ### 1.4 Backup Frequency
 
-The Bitcoin Core wallet was originally a collection of unrelated private keys with their associated addresses. If a non-HD wallet generated a key/address, gave that address out and then restored a backup from before that key's generation, then any funds sent to that address would be lost definitively.
+The Bitcoin Core wallet was originally a collection of unrelated private keys with their associated addresses. If a non-HD wallet had generated a key/address, had given that address out and then had restored a backup from before that key's generation, then any funds sent to that address would have been lost definitively.
+
+<!-- 01 -->
 
 However, [version 0.13](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.13.0.md) introduced HD wallets. Restoring old backups can no longer definitively lose funds as long as the addresses used were from the wallet's HD seed (since all private keys can be rederived from the seed).
 
