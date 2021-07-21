@@ -53,15 +53,13 @@ The command is `bitcoin-cli backupwallet "destination"`. The destination paramet
 
 The Bitcoin Core wallet was originally a collection of unrelated private keys with their associated addresses. If a non-HD wallet had generated a key/address, had given that address out and then had restored a backup from before that key's generation, then any funds sent to that address would have been lost definitively.
 
-<!-- 01 -->
-
-However, [version 0.13](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.13.0.md) introduced HD wallets. Restoring old backups can no longer definitively lose funds as long as the addresses used were from the wallet's HD seed (since all private keys can be rederived from the seed).
+However, [version 0.13](https://github.com/bitcoin/bitcoin/blob/master/doc/release-notes/release-notes-0.13.0.md) introduced HD wallets. Users no longer lose funds when restoring old backups, as long as the addresses used were from the wallet's HD seed (since all private keys can be derived from the seed).
 
 So, theoretically, a single backup is enough. But it is recommended to make regular backups (1 time a day or a week) or when there is a relevant amount of new transactions in the wallet.
 
-### 1.5 Restoring Wallet From a Backup
+### 1.5 Restoring The Wallet From a Backup
 
-An empty wallet must be created to restore a wallet, . And then, the backup file rewrites the `wallet.dat` of this new wallet.
+To restore a wallet, an empty one must be created  first.  The backup file then rewrites the `wallet.dat` of this new wallet.
 
 The user must unload the wallet and load it again after replacing the file.
 
@@ -78,7 +76,7 @@ After these steps, the wallet balance can be checked.
 
 ### 1.6 `-rescan` and `-reindex`
 
-The `-rescan` argument rescans the blockchain for missing wallet transactions on startup.
+The `-rescan` argument rescans the blockchain for missing wallet transactions during startup.
 
 `$ bitcoind -rescan`
 
@@ -90,17 +88,17 @@ In that case, it is necessary to restart the node with the `-reindex` command-li
 
 `$ bitcoind -reindex`
 
-### 1.7 Dumping Wallet
+### 1.7 Dumping The Wallet
 
-Alternatively, the `dumpwallet` command can be used to backup the wallet. It dumps all wallet keys (including the master private key) in a human-readable format to a file.
+Alternatively, the `dumpwallet` command can be used to backup the wallet. It dumps all wallet keys (including the master private key) in a human-readable format into a file.
 
 Note that this file is not encrypted and the keys are exposed. An attacker in possession of the file could recreate the wallet and gain access to the keys.
 
-The file is generated on the server-side and so the user must have access to server folders.
+The file is generated on the server-side and so the user must have access to the server folders.
 
 `$ bitcoin-cli -rpcwallet="wallet-01" dumpwallet /home/node01/Backups/dump01.txt`
 
-### 1.8 Importing Wallet From a Dump File
+### 1.8 Importing The Wallet From a Dump File
 
 The command `importwallet` imports keys from a wallet dump file.
 
