@@ -1,10 +1,10 @@
-# Multisig
+# Multisign
 
-Currently, it is possible to create a multig wallet using Bitcoin Core Core only.
+Currently, it is possible to create a multig wallet using Bitcoin Core only.
 
-Although there is already a brief explanation and a functional test about the multisig steps implemented in [PR 22067](https://github.com/bitcoin/bitcoin/pull/22067), this tutorial proposes to use the signet, bringing the reader closer to a real environment (instead of regtest) and explaining some functions in more detail.
+Although there is already a brief explanation and a functional test about the multisig implemented in [PR 22067](https://github.com/bitcoin/bitcoin/pull/22067), this tutorial proposes to use the signet (instead of regtest), bringing the reader closer to a real environment and explaining some functions in more detail.
 
-So, before starting this tutorial, start the bitcoin node on the signet network.
+Before starting this tutorial, start the bitcoin node on the signet network.
 
 ```bash
 ./src/bitcoind -signet
@@ -12,7 +12,7 @@ So, before starting this tutorial, start the bitcoin node on the signet network.
 
 ### 1.1 Basic Multisig Workflow
 
-1. For a 2-of-3 multisig, create 3 descriptor wallets. It is important to be descriptor type in order to retrieve the wallet descriptors. These wallets contain HD seed and private keys, which will be used to sign the PSBTs and derive the xpub.
+1. For a 2-of-3 multisig, create 3 descriptor wallets. It is important that they are of the descriptor type in order to retrieve the wallet descriptors. These wallets contain HD seed and private keys, which will be used to sign the PSBTs and derive the xpub.
 
 ```bash
 for ((n=1;n<=3;n++))
@@ -21,7 +21,7 @@ do
 done
 ```
 
-2. Extract the xpub of each wallet. To do it, the `listdescriptors` is used. By default, Bitcoin Core single-sig wallets are created using path `m/44'/1'/0'` for PKH, `m/84'/1'/0'` for WPKH and `m/49'/1'/0'` for P2WPKH-nested-in-P2SH based accounts. Each of them uses the chain 0 for external addresses and chain 1 for internal ones, as shown in the example below.
+2. Extract the xpub of each wallet. To do this, the `listdescriptors` RPC is used. By default, Bitcoin Core single-sig wallets are created using path `m/44'/1'/0'` for PKH, `m/84'/1'/0'` for WPKH and `m/49'/1'/0'` for P2WPKH-nested-in-P2SH based accounts. Each of them uses the chain 0 for external addresses and chain 1 for internal ones, as shown in the example below.
 
 ```
 wpkh([1004658e/84'/1'/0']tpubDCBEcmVKbfC9KfdydyLbJ2gfNL88grZu1XcWSW9ytTM6fitvaRmVyr8Ddf7SjZ2ZfMx9RicjYAXhuh3fmLiVLPodPEqnQQURUfrBKiiVZc8/0/*)#g8l47ngv
@@ -51,12 +51,12 @@ The following command can be used to verify if the xpub was generated correctly.
 for x in "${!xpubs[@]}"; do printf "[%s]=%s\n" "$x" "${xpubs[$x]}" ; done
 ```
 
-Note that this step extract the `m/84'/1'/0'` account and does not conform to [BIP 45](https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki) or [BIP 87](https://github.com/bitcoin/bips/blob/master/bip-0087.mediawiki).
-At time of writing, there is no way to extract a specific path from wallets in Bitcoin Core. For this, an external signer/xpub can be used.
+Note that this step extracts the `m/84'/1'/0'` account and does not conform to [BIP 45](https://github.com/bitcoin/bips/blob/master/bip-0045.mediawiki) or [BIP 87](https://github.com/bitcoin/bips/blob/master/bip-0087.mediawiki).
+At the time of writing, there is no way to extract a specific path from wallets in Bitcoin Core. For this, an external signer/xpub can be used.
 
-[PR #22341](https://github.com/bitcoin/bitcoin/pull/22341), which is still under development, introduces a new wallet RPC `getxpub`. It takes a BIP32 path as argument and returns the xpub, along with the master key fingerprint.
+[PR #22341](https://github.com/bitcoin/bitcoin/pull/22341), which is still under development, introduces a new wallet RPC `getxpub`. It takes a BIP32 path as an argument and returns the xpub, along with the master key fingerprint.
 
-3. Define the external and internal multisig, add the checksum and then, join both in a JSON array.
+3. Define the external and internal multisig descriptors, add the checksum and then, join both in a JSON array.
 
 ```bash
 external_desc="wsh(sortedmulti(2,${xpubs["external_xpub_1"]},${xpubs["external_xpub_2"]},${xpubs["external_xpub_3"]}))"
@@ -71,11 +71,11 @@ multisig_int_desc="{\"desc\": $internal_desc_sum, \"active\": true, \"internal\"
 multisig_desc="[$multisig_ext_desc, $multisig_int_desc]"
 ```
 
-`external_desc` and `internal_desc` specifies the output type (`wsh`, in this case) and the xpubs involveded. It also uses BIP 67 (`sortedmulti`), so the wallet can be recreated without worrying about the order of xpubs. Conceptually, descriptors describe a list of scriptPubKey (along with information for spending from it) [[source](https://github.com/bitcoin/bitcoin/issues/21199#issuecomment-780772418)].
+`external_desc` and `internal_desc` specify the output type (`wsh`, in this case) and the xpubs involved. They also use BIP 67 (`sortedmulti`), so the wallet can be recreated without worrying about the order of xpubs. Conceptually, descriptors describe a list of scriptPubKey (along with information for spending from it) [[source](https://github.com/bitcoin/bitcoin/issues/21199#issuecomment-780772418)].
 
 Note that at least two descriptors are usually used, one for internal derivation paths and external ones. There are discussions about eliminating this redundancy, as can been seen in the issue [#17190](https://github.com/bitcoin/bitcoin/issues/17190).
 
-After creating the descriptors, you need to add the checksum, which is required by the RPC used to import descriptors.
+After creating the descriptors, it is necessary to add the checksum, which is required by the `importdescriptors` RPC.
 
 The checksum for a descriptor without one can be computed using the `getdescriptorinfo` RPC. The response has the `descriptor` field, which is the descriptor with checksum added.
 
