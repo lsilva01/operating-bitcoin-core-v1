@@ -79,7 +79,7 @@ The watch-only wallet knows its UTXOs, since it is connected to blockchain, so i
 
 Since the watch-only wallet does not have private keys, a Partially Signed Bitcoin Transaction (PSBT) should be created first.
 
-It is also possible to createad raw transaction instead, but PSBT is more flexible and it is also used for multisig.
+It is also possible to createad raw transaction instead, but PSBT is more flexible, it can be combined with other transactions and it is also used for multisig.
 
 ```bash
 balance=$(./src/bitcoin-cli -signet -rpcwallet="watch_only_wallet" getbalance)
@@ -88,16 +88,42 @@ amount=$(echo "$balance * 0.8" | bc -l | sed -e 's/^\./0./' -e 's/^-\./-0./')
 
 destination_addr=$(./src/bitcoin-cli -signet -rpcwallet="recipient_wallet" getnewaddress)
 
-funded_psbt=$(./src/bitcoin-cli -signet -named -rpcwallet="watch_only_wallet" walletcreatefundedpsbt outputs="{\"$destination_addr\": $amount}" | jq -r '.psbt')
+./src/bitcoin-cli -signet -named -rpcwallet="watch_only_wallet" walletcreatefundedpsbt outputs="{\"$destination_addr\": $amount}" | jq -r '.psbt' > ~/part01.psbt
 ```
+
+The last command writes the PSBT in a file, so it can be copied to the off-line machine.
 
 Optionally, the PSBT can be decoded to a JSON format using `decodepsbt` RPC or analyzed using `analyzepsbt`, which provides information about the current status of a PSBT and its inputs, eg missing signatures.
 
 ```bash
-./src/bitcoin-cli -signet decodepsbt $funded_psbt
+./src/bitcoin-cli -signet decodepsbt $(< ~/part01.psbt)
 
-./src/bitcoin-cli -signet analyzepsbt $funded_psbt
+./src/bitcoin-cli -signet analyzepsbt $(< ~/part01.psbt)
 ```
 
 ## 1.5 Sign the PSBT
 
+The step below must be executed using the cold wallet, in the off-line machine.
+
+```bash
+./src/bitcoin-cli -signet -rpcwallet="cold_wallet" walletprocesspsbt "$(< ~/part01.psbt)" | jq -r '.psbt' > ~/signed.psbt
+```
+
+Just as before, the signed PSBT is saved in a file so that it can be copied to the online node, which will broadcast the transaction to the connected peers.
+
+## 1.5 Finalize and Broadcast the PSBT
+
+Before execute the commands below, copy th file to online machine.
+
+```bash
+finalized_psbt_hex=$(./src/bitcoin-cli -signet finalizepsbt $(< ~/signed.psbt) | jq -r '.hex')
+
+./src/bitcoin-cli -signet sendrawtransaction $finalized_psbt_hex
+```
+
+The `finalizepsbt` RPC is used to produce a network serialized transaction which can be broadcast with `sendrawtransaction`.
+
+It checks that all inputs have complete scriptSigs and scriptWitnesses and, if so, encodes them into network serialized transactions.
+
+
+### 1.6 Alternative Workflow (Raw Transaction)
