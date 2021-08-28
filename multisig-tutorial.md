@@ -10,7 +10,7 @@ Before starting this tutorial, start the bitcoin node on the signet network.
 ./src/bitcoind -signet
 ```
 
-This tutorial also uses [jq](https://github.com/stedolan/jq) JSON processor to process the results from RPC and stores the relevant values in bash variables. This makes the tutorial reproducible and easier to follow the step by step.
+This tutorial also uses [jq](https://github.com/stedolan/jq) JSON processor to process the results from RPC and stores the relevant values in bash variables. This makes the tutorial reproducible and easier to follow step by step.
 
 ## 1.1 Basic Multisig Workflow
 
@@ -128,8 +128,6 @@ At time of writing, the url is [`https://signetfaucet.com`](https://signetfaucet
 
 Coins received by the wallet must have at least 1 confirmation before they can be spent. It is necessary to wait for a new block to be mined before continuing.
 
-<!-- a -->
-
 The `getbalances` RPC may be used to check the balance. Coins with `trusted` status can be spent.
 
 ```bash
@@ -148,15 +146,17 @@ destination_addr=$(./src/bitcoin-cli -signet -rpcwallet="participant_1" getnewad
 funded_psbt=$(./src/bitcoin-cli -signet -named -rpcwallet="multisig_wallet_01" walletcreatefundedpsbt outputs="{\"$destination_addr\": $amount}" | jq -r '.psbt')
 ```
 
-Multisig wallets cannot create and sign transactions directly, like it happens in the singlesig ones because it requires the signatures of the co-signers.
+Unlike singlesig wallets, multisig wallets cannot create and sign transactions directly because they require the signatures of the co-signers. Instead they create a Partially Signed Bitcoin Transaction (PSBT).
 
-Instead a Partially Signed Bitcoin Transaction (PSBT) is created. PSBTs are a data format that allows wallets and other tools to exchange information about a Bitcoin transaction and the signatures necessary to complete it. [[source](https://bitcoinops.org/en/topics/psbt/)
+PSBT is a data format that allows wallets and other tools to exchange information about a Bitcoin transaction and the signatures necessary to complete it. [[source](https://bitcoinops.org/en/topics/psbt/)]
 
 Te current PSBT version (v0) is defined in [BIP 174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki).
 
 For simplicity, the destination address is taken from the `participant_1` wallet in the code above, but it can be any valid bitcoin address.
 
-The `walletcreatefundedpsbt` RPC is used to create and fund a transaction in the PSBT format. It is the first step in creating the PSBT.
+The `walletcreatefundedpsbt` RPC is used to create and fund a transaction in the PSBT format. It is the first step in creating the PSBT.\
+
+There is also the `createpsbt` RPC, which serves the same purpose, but it has no access to the wallet or to the UTXO set. It is functionally the same as `createrawtransaction` and just drops the raw transaction into an otherwise blank PSBT. [[source](https://bitcointalk.org/index.php?topic=5131043.msg50573609#msg50573609)] In most cases, `walletcreatefundedpsbt` solves the problem.
 
 The `send` RPC can also return a PSBT if more signatures are needed to sign the transaction.
 
@@ -170,7 +170,7 @@ The `send` RPC can also return a PSBT if more signatures are needed to sign the 
 
 Optionally, the PSBT can be decoded to a JSON format using `decodepsbt` RPC.
 
-The `analyzepsbt` RPC analyzes and provides information about the current status of a PSBT and its inputs, eg missing signatures.
+The `analyzepsbt` RPC analyzes and provides information about the current status of a PSBT and its inputs, e.g. missing signatures.
 
 ### 1.8 Update the PSBT
 
@@ -194,7 +194,7 @@ The PSBT, if signed separately by the co-signers, must be combined into one tran
 
 There is an RPC called `joinpsbts`, but it has a different purpose than `combinepsbt`. `joinpsbts` joins the inputs from multiple distinct PSBTs into one PSBT.
 
-In the example above, PSBTs are the same, but signed by different participants. If the user tries to merge them, the error `Input txid:pos exists in multiple PSBTs` is returned. To be able to merge PSBTs into one, they must have different inputs and outputs.
+In the example above, the PSBTs are the same, but signed by different participants. If the user tries to merge them using `joinpsbts`, the error `Input txid:pos exists in multiple PSBTs` is returned. To be able to merge different PSBTs into one, they must have different inputs and outputs.
 
 ### 1.10 Finalize and Broadcast the PSBT
 
