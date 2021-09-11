@@ -127,3 +127,45 @@ It checks that all inputs have complete scriptSigs and scriptWitnesses and, if s
 
 
 ### 1.6 Alternative Workflow (Raw Transaction)
+
+The recommended way to create transaction today is using PSBT and using the PSBT-based RPCs, as seen in the previous section.
+
+But the user can still uses the raw transaction RPCs. This workflow shows this.
+
+```bash
+balance=$(./src/bitcoin-cli -signet -rpcwallet="watch_only_wallet" getbalance)
+
+amount=$(echo "$balance * 0.8" | bc -l | sed -e 's/^\./0./' -e 's/^-\./-0./')
+
+destination_addr=$(./src/bitcoin-cli -signet -rpcwallet="recipient_wallet" getnewaddress)
+
+raw_transaction=$(./src/bitcoin-cli -signet createrawtransaction "[]" "[{\"$destination_addr\": $amount}]")
+
+./src/bitcoin-cli -signet -rpcwallet="watch_only_wallet" fundrawtransaction "$raw_transaction" | jq -r '.hex' > ~/funded_tx.txt
+```
+
+The first step `createrawtransaction` returns a hex raw partial transaction with just one output and no inputs. This must be done on the online node as it has access to the blockchain and knows the UTXO Set.
+
+The inputs can be added manually passing them instead of `'[]'` in the first argument, but the wallet can do it automatically using `fundrawtransaction`. This will return another unsigned raw transaction, but now one that includes inputs (sufficient to cover the amount to be sent) and change (for whatever is left of the inputs spent after subtracting the amount, plus a reasonable fee based on network estimation, and estimation of how big the transaction will be after signing).
+
+The inputs that was added, as well the transaction structure itself, can be verified with `decoderawtransaction` RPC.
+
+```bash
+./src/bitcoin-cli -signet decoderawtransaction $(< ~/funded_tx.txt)
+```
+
+Then the `funded_tx.txt` file must be copied to the offline machine, where the cold wallet is installed. The hex transaction can this file signed with `signrawtransactionwithwallet` RPC.
+
+```bash
+./src/bitcoin-cli -signet -rpcwallet="cold_wallet" signrawtransactionwithwallet $(< ~/funded_tx.txt)  | jq -r '.hex' > ~/signed_tx.txt
+```
+
+Finally, the `signed_tx.txt` can be copied to online node adn the transaction can be broadcasted.
+
+```bash
+./src/bitcoin-cli -signet sendrawtransaction $(< ~/signed_tx.txt)
+```
+
+### Source:
+
+1. [fundrawtransaction - what is it?](https://bitcoin.stackexchange.com/a/106204)
