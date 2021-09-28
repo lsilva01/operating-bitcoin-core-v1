@@ -3,7 +3,7 @@
 - [1. Basic Operations](#1-basic-operations)
 - [2. Squashing and Rebasing](#2-squashing-and-rebasing)
 - [3. Writing Good Commit messages](#3-writing-good-commit-messages  )
-- [4. Creating Proper Pull Requests](#4-creating-proper-pull-requests)
+- [4. Creating Pull Requests](#4-creating-pull-requests)
 - [5. Sources](#5-sources)
 
 ## 1. Basic Operations
@@ -363,7 +363,7 @@ Take a look at the full diff and just think how much time the author is saving f
 
 The important thing here is to focus on making clear the reasons why you made the change in the first place—the way things worked before the change (and what was wrong with that), the way they work now, and why you decided to solve it the way you did.
 
-## 4 Creating Proper Pull Requests
+## 4 Creating Pull Requests
 
 ### 4.1 Focus on a clear, minimal change
 
