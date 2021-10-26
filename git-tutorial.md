@@ -22,9 +22,9 @@ To clone the forked project, the command below can be used. This will allow you 
 git clone https://github.com/<username>/bitcoin.git [<directory>]
 ```
 
-The `directory` argument is optional. If no one is provided, the name of the repository will be used (`bitcoin` in this case).
+The `directory` argument is optional. If no one is provided, the name of the repository will be used (in this case `bitcoin`).
 
-If the intention is just review or study the code, you can clone the original repository.
+If the intention is just to review or study the code, you can clone the original repository.
 
 ```bash
 git clone https://github.com/bitcoin/bitcoin.git [<directory>]
@@ -32,7 +32,7 @@ git clone https://github.com/bitcoin/bitcoin.git [<directory>]
 
 ### 1.1.3 Add Remote Repository (Upstream)
 
-If you intend to open pull requests and contribute to original code, you also need to add the original repository.
+If you intend to open pull requests and contribute to the original code, you also need to add the original repository.
 
 Otherwise, this step can be skipped.
 
@@ -49,13 +49,13 @@ git checkout -b new_branch
 Switched to a new branch ‘new_branch’
 ```
 
-Specifying `-b` causes a new branch to be created as if `git-branch` were called and then checked out.
+Specifying `-b` causes a new branch to be created just like when `git-branch` is called and then checked out.
 
 If switching to an existing branch, this parameter must be omitted.
 
 ### 1.1.5 Commiting and Publishing the Changes
 
-After making the changes, you can check if the files that has been changed with `git status`. This command is used to examine the current state of the repository and can be used to confirm a git add promotion.
+After making the changes, you can check the files that have been changed with `git status`. This command is used to examine the current state of the repository and can be used to confirm a git add promotion.
 
 The commit can be done with the following commands:
 
@@ -69,7 +69,7 @@ The `git add` command adds a change in the working directory to the staging area
 
 If you want to add specific files to the staging area, you can use `git add <filename>`.
 
-The `git reset` command is used to undo a git add. The `git commit` command is then used to commit a snapshot of the staging directory to the repositories commit history.
+The `git reset` command is used to undo a git add. The `git commit` command is then used to commit a snapshot of the staging directory to the repository's commit history.
 
 You can also use `git commit -a -m "First commit"`.Specifying `-a` automatically stages all files that git already knows about.
 
@@ -83,7 +83,7 @@ Alternatively, you can use the `–set-upstream` option that is equivalent to th
 
 Once you push the changes to the repository, the `Compare & pull request` button will appear in GitHub in the initial page.
 
-Open a pull request by clicking this button. This allows the repository maintainers to review the contribution. From here, they can merge it if it is good, or they can request some changes.
+Open a pull request by clicking this button. This allows the repository maintainers to review the contribution. From here, they can merge it if it's good, or they can request some changes.
 
 ### 1.1.7 Review a Pull Request
 
@@ -93,7 +93,7 @@ GitHub exposes PRs as branches on the upstream repository with `pull/<pr_number>
 git fetch origin pull/<pr_number>/head && git checkout FETCH_HEAD
 ```
 
-The review message usually contains `ACK` if the reviewers agree with the changes or `NACK` if not.
+The review message usually contains `ACK` if the reviewers agree with the changes, `NACK` if not.
 
 An `ACK` is usually followed by a description of how the review was done.
 
@@ -109,11 +109,11 @@ Some reviews contain a concise description of the tests performed, such as the [
 
 When giving an `ACK`, specify the commits reviewed by appending the commit hash of the HEAD commit, for example, `tACK 94b6c8d`.
 
-### 1.1.7 Get a Specific Version (Tag)
+### 1.1.8 Get a Specific Version (Tag)
 
 The command `git tag` shows all existing tags.
 
-You can switch to a specific tag with the command. Useful when testing a version.
+You can switch to a specific tag with the following command, which is useful when testing a version.
 
 ```bash
 git checkout tags/v0.21.0
@@ -121,7 +121,7 @@ git checkout tags/v0.21.0
 
 ## 2 Squashing and Rebasing
 
-Keeping commits organized is good practice. Usually after opening a PR, reviewers will make suggestions and the code will need to be changed. So, rather than adding new commits indiscriminately, `git rebase` can be used to organize these new commits in a coherent way.
+Keeping commits organized is a good practice. Usually after opening a PR, reviewers will make suggestions and the code will need to be changed. So, rather than adding new commits indiscriminately, `git rebase` can be used to organize these new commits in a coherent way.
 
 ### 2.1 Amending your last commit
 
@@ -136,7 +136,7 @@ git commit -a --amend
 
 Amending only works for the most recent commit. But it's common to need to fix an older commit.
 
-There is a tool to do this: the interactive rebase, which can be used in two ways: passing `HEAD~n`, where `n` is the last `n`  commits are about to be rebased. Or passing the commit hash as parameter.
+There is a tool to do this: the interactive rebase, which can be used in two ways: passing `HEAD~n` as parameters, where `n` is the last `n` commits that are about to be rebased. Or passing the commit hash as parameter.
 
 ```bash
 git rebase -i HEAD~3
@@ -155,7 +155,7 @@ pick 0b9d0bb Add net.h
 #
 # Commands:
 # p, pick <commit> = use commit
-# f, fixup <commit> = like "squash", but discard this commit's log message
+# f, fixup <commit> = like "squash", but it discards the commit's log message.
 ```
 
 When you run git rebase -i, you get an editor session listing all of the commits that are being rebased and a number of options for what you can do to them. The default choice is `pick`.
@@ -170,7 +170,7 @@ When you run git rebase -i, you get an editor session listing all of the commits
 
 You can reorder commits by moving them around in the file.
 
-Change from `pick` to `fixup` the commits that should be merged.
+To merge commits, change `pick` to `fixup` for the items to be merged.
 
 ```
 pick 8d3fc77 Add test.cpp
@@ -188,26 +188,26 @@ The squashing can also be performed in a more automated manner by using the `--a
 git commit -a --fixup HEAD^
 git rebase -i --autosquash HEAD~3
 ```
-This automatically generate the rebase script with commits reordered and actions set up.
+This automatically generates the rebase script with commits reordered and actions set up.
 
-`HEAD^` means the first immediate parent of the tip of the current branch. `HEAD^` is short for `HEAD^1`. This is usually used on merge commits.
+`HEAD^` refers to the first immediate parent of the tip of the current branch. `HEAD^` is short for `HEAD^1`. This is usually used on merge commits.
 
-`HEAD ~ 3` gets the last 3 commits. This value can be changed to an arbitrary number of commits
+`HEAD ~ 3` gets the last 3 commits. This value can be changed to an arbitrary number of commits.
 
 ### 2.4 Fetching Upstream Commits
 
-When developing new features, it is common to need to fetch new commits from `bitcoin:master` and rewriting the local master with upstream's master.
+When developing new features, it is common to need to fetch new commits from `bitcoin:master` and rewrite the local master with the upstream's master.
 
-To do this, the upstream repository must have already been configured previously, as shown in step 1.1.3.
+To do this, the upstream repository must have already been configured, as shown in step 1.1.3.
 
-The commands below do this merge.
+The commands below execute this merge.
 
 ```bash
 $ git fetch upstream
 $ git rebase upstream/master
 ```
 
-To push the update to master, it may be necessary to force the push with `--force` (or `-f`).
+To push the update to the master, it may be necessary to force the push with `--force` (or `-f`).
 
 ```bash
 $ git push origin master --force
@@ -215,7 +215,7 @@ $ git push origin master --force
 
 ## 3 Writing Good Commit messages
 
-Good commit messages is one of most important aspect for a project maintainability. They allow new contributors to retrieve the context of a change and understand _what_ has changed and _why_.
+Good commit messages are one of most important aspects for a project's maintainability. They allow new contributors to retrieve the context of a change and understand _what_ has changed and _why_.
 
 Therefore, a developer should not neglect good practices when writing commit messages. Some of them will be presented below.
 
@@ -234,7 +234,7 @@ Some small improvements to release notes
 
 This message can be found in the [commit 9f9ffe5](https://github.com/bitcoin/bitcoin/commit/9f9ffe5).
 
-Nothing more need be said; if the reader wonders what the improvements were, she can simply take a look at the change itself, i.e. use `git show` or `git diff` or `git log -p`.
+Nothing more needs be said; if the reader wonders what the improvements were, she can simply take a look at the change itself, i.e. use `git show` or `git diff` or `git log -p`.
 
 If the commit message is simple, just add the `-m` option to `git commit`:
 
@@ -252,7 +252,7 @@ is actively harmful as it removes all `-` from the text. So remove that
 line. See discussion in #22681.
 ```
 
-Commit messages with bodies are not so easy to write with the `-m` option. It's better off to write them in a proper text editor.
+Commit messages with bodies are not so easy to write with the `-m` option. It's better to write in a proper text editor.
 
 
 Note that there is a blank line between the title and the body.
@@ -293,7 +293,7 @@ f95b655ba Improve doc/i2p.md regarding I2P router options/versions
 
 This is as simple as it sounds. Begin all subject lines with a capital letter.
 
-Note that most of the above commit messages start with a capital letter, except when prefixing the area affected by the commit. Valid areas such as:
+Note that most of the above commit messages start with a capital letter, except when prefixing the area affected by the commit. Valid areas are:
 
 * `consensus` for changes to consensus critical code
 * `doc` for changes to the documentation
@@ -311,7 +311,7 @@ Note that most of the above commit messages start with a capital letter, except 
 
 ### 3.4 Do not end the subject line with a period
 
-Trailing punctuation is unnecessary in subject lines. Besides, space is precious when you’re trying to keep them to 50 chars or less.
+Trailing punctuation is unnecessary in subject lines. Besides, space is precious when you’re trying to keep them at 50 characters or less.
 
 This can be seen in the above commit message headers.
 
@@ -367,9 +367,9 @@ The important thing here is to focus on making clear the reasons why you made th
 
 ### 4.1 Focus on a clear, minimal change
 
-It is important that the PR has a clear objective. This makes the review easier and reduces changes from introducing bugs.
+It is important that the PR has a clear objective. This makes the review easier and reduces the risk of changes introducing bugs.
 
-If the PR is too long, consider breaking them down into smaller ones.
+If the PR is too long, consider breaking it down into smaller ones.
 
 A good example of this is [PR 17728](https://github.com/bitcoin/bitcoin/pull/17728).
 
@@ -377,17 +377,17 @@ A good example of this is [PR 17728](https://github.com/bitcoin/bitcoin/pull/177
 
 The PR title and description is the first thing reviewers will see. Therefore, it is important that they present clarity and objectivity so that the reviewer can easily understand the PR motivations.
 
-The PR title should have the same prefixes presented in 1.3.3 section. They are described in Bitcoin Core contributing guide. The title of [PR 22732](https://github.com/bitcoin/bitcoin/pull/22732), for example, uses the prefix `net`.
+The PR title should use the prefixes presented in section 1.3.3. They are described in Bitcoin Core's contributing guide. The title of [PR 22732](https://github.com/bitcoin/bitcoin/pull/22732), for example, uses the prefix `net`.
 
-The same as for the commit applies here. PR text should focus on _why_, not _what_. Summarizing what was done is okay, but explaining the motivations and the problem that the RP solves is crucial.
+The same recommendation for the commit description applies here. PR text should focus on _why_, not _what_. Summarizing what was done is okay, but explaining the motivations and the problem that the RP solves is crucial.
 
 The text of [PR 22791](https://github.com/bitcoin/bitcoin/pull/22791), for example, explains the problem (how the bug was introduced) and the proposed solution.
 
-Including step-by-step instructions on how to review and test PR in the text is also interesting.
+Including step-by-step instructions on how to review and test the PR in the text is also interesting.
 
 ### 4.3 Organize the commits coherently
 
-A PR can contain multiple commits. It is easier for the review to analyze each change separately.
+A PR can contain multiple commits. It is easier for the reviewer to analyze each change separately.
 
 A good strategy for deciding the granularity of each commit is by functionality. For example, one changes the component, the other updates the documentation about this component, and another implements the tests for this component.
 
@@ -401,9 +401,9 @@ f13fc1629 Allow lockunspent to store the lock in the wallet DB
 c52789365 Allow locked UTXOs to be store in the wallet database
 ```
 
-The 5 commits that make up this PR are logically divided. `c52789365` implements the proposed solution. `f13fc1629` updates the RPC. `719ae927d` updates the tests. `077154fe6` adds release note and `d96b000e9` implement the same solution in GUI.
+The 5 commits that make up this PR are logically divided. `c52789365` implements the proposed solution. `f13fc1629` updates the RPC. `719ae927d` updates the tests. `077154fe6` adds release note and `d96b000e9` implements the same solution in GUI.
 
-Separating commits this way is good practice and makes it a lot easier for reviewers.
+Separating commits this way is a good practice and makes it a lot easier for reviewers.
 
 ### 4.4 Create test coverage if necessary
 
@@ -411,7 +411,7 @@ When adding a new feature, such as a new RPC, a test should be added.
 
 If the change occurs at the component level, unit testing is likely to be more appropriate. If it's at the resource level (something users interact with), then functional testing fits the case.
 
-An example of PR that does this is the [PR 14667](https://github.com/bitcoin/bitcoin/pull/14667), which added a new RPC and  funfional test for it.
+An example of a PR that does this is the [PR 14667](https://github.com/bitcoin/bitcoin/pull/14667), which added a new RPC and  functional test for it.
 
 ## 5 Sources:
 
